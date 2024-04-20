@@ -3,46 +3,59 @@ import db from "@repo/db/client";
 const app = express();
 const PORT = 3003;
 
+interface PaymentInfo {
+  token: string;
+}
+
+app.use(express.json());
+
 app.post("/hdfcWebhook", async (req, res) => {
-  const paymentInfo: {
-    token: string;
-    userId: string;
-    amount: string;
-  } = {
+  console.log(req.body);
+
+  const paymentInfo: PaymentInfo = {
     token: req.body.token,
-    userId: req.body.userId,
-    amount: req.body.amount,
   };
-
   try {
-    await db.$transaction([
-      db.balance.updateMany({
-        where: { userId: Number(paymentInfo.userId) },
-        data: {
-          amount: {
-            increment: Number(paymentInfo.amount),
-          },
-        },
-      }),
-
-      db.onRampTransaction.updateMany({
-        where: {
-          token: paymentInfo.token,
-        },
-        data: {
-          status: "Success",
-        },
-      }),
-    ]);
-    res.json({
-      message: "Captured",
+    let tempTransaction = await db.onRampTransaction.findFirst({
+      where: { token: paymentInfo.token },
     });
+    if (!tempTransaction) {
+      res.status(404).json({ message: "transaction does not exists" });
+    }
+    if (tempTransaction?.status === "Processing") {
+      const updatedTransaction = await db.$transaction([
+        db.balance.updateMany({
+          where: { userId: Number(tempTransaction.userId) },
+          data: {
+            amount: {
+              increment: Number(tempTransaction.amount),
+            },
+          },
+        }),
+
+        db.onRampTransaction.updateMany({
+          where: {
+            token: paymentInfo.token,
+          },
+          data: {
+            status: "Success",
+          },
+        }),
+      ]);
+      res.json({
+        message: "Captured",
+      });
+    } else {
+      res
+        .status(200)
+        .json({ message: `transaction status is ${tempTransaction?.status}` });
+    }
   } catch (error) {
     console.log(error);
-    res.status(411).json({ message: "Error while processing webhook" });
+    console.log("error");
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`${PORT}`);
+  console.log(`Webhook server is running on ${PORT}`);
 });
