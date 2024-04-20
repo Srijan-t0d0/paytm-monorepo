@@ -3,7 +3,7 @@ import { AddMoney } from "./../../components/AddMoneyCard";
 import { BalanceCard } from "./../../components/BalanceCard";
 import { OnRampTransactions } from "./../../components/OnRampTransactions";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../lib/auth";
+import { authOptions } from "../../lib/auth";
 
 async function getBalance() {
   const session = await getServerSession(authOptions);
@@ -27,6 +27,7 @@ async function getOnRampTransactions() {
   });
   console.log(txns, session.user.id);
   return txns.map((t) => ({
+    id: t.id,
     time: t.startTime,
     amount: t.amount,
     status: t.status,
