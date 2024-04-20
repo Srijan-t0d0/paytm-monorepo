@@ -7,7 +7,7 @@ export default function Layout({
 }): JSX.Element {
   return (
     <div className="flex">
-      <div className="flex justify-center items-center w-72 border-r border-slate-300 min-h-screen mr-4">
+      <div className="flex  justify-center items-center max-w-72 min-w-72  border-r border-slate-300 min-h-screen mr-4">
         <div>
           <SidebarItem href={"/dashboard"} icon={<HomeIcon />} title="Home" />
           <SidebarItem
