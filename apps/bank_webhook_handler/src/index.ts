@@ -1,6 +1,7 @@
 import express from "express";
 import db from "@repo/db/client";
 const app = express();
+const PORT = 3003;
 
 app.post("/hdfcWebhook", async (req, res) => {
   const paymentInfo: {
@@ -42,4 +43,6 @@ app.post("/hdfcWebhook", async (req, res) => {
   }
 });
 
-app.listen(3000);
+app.listen(PORT, () => {
+  console.log(`${PORT}`);
+});
