@@ -1,5 +1,7 @@
+import { SendCard } from "../../components/SendCard";
+
 const page = () => {
-  return <div>Heya</div>;
+  return <SendCard />;
 };
 
 export default page;
