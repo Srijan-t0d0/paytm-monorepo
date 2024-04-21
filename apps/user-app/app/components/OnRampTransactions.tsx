@@ -1,5 +1,11 @@
 import { Card } from "@repo/ui/card";
 
+const statusColors = {
+  Success: "flex flex-col justify-center dark:text-[#9d74fb]",
+  Processing: "flex flex-col justify-center dark:text-slate-300",
+  Failure: "flex flex-col justify-center dark:text-red-500",
+};
+
 export const OnRampTransactions = ({
   transactions,
 }: {
@@ -7,7 +13,7 @@ export const OnRampTransactions = ({
     id: number;
     time: Date;
     amount: number;
-    status: string;
+    status: "Success" | "Processing" | "Failure";
     provider: string;
   }[];
 }) => {
@@ -31,7 +37,7 @@ export const OnRampTransactions = ({
                 {t.time.toDateString()}
               </div>
             </div>
-            <div className="flex flex-col justify-center dark:text-[#9d74fb]">
+            <div className={`${statusColors[t.status]}`}>
               + Rs {t.amount / 100}
             </div>
           </div>
